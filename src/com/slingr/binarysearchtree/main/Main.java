@@ -1,49 +1,35 @@
 package com.slingr.binarysearchtree.main;
 
-import org.w3c.dom.Node;
+
+import com.slingr.binarysearchtree.BinarySearchTree;
 
 
 public class Main {
 
 	public static void main(String[] args) {
+		
+		System.out.println("creating empty tree");
+		BinarySearchTree bst = new BinarySearchTree();
+		System.out.println("adding: 12, 11, 90, 82, 7, 9");
+		bst.add(12); bst.add(11); bst.add(90); 
+		bst.add(82); bst.add(7); bst.add(9);
+		print(bst);
 
-		Integer[] array = {1,31,3,2,314,23,123};
-		
-		System.out.println("creating tree with array: {1,31,3,2,314,23,123}");
+		Integer[] array = {26, 82, 16, 92, 33};
+		System.out.println("creating tree with array: {26, 82, 16, 92, 33}");
 		BinarySearchTree tree = new BinarySearchTree(array);
-		printInOrder(tree);
-		
-		System.out.println("adding 4");
-		tree.add(4);
-		printInOrder(tree);
-		
-		System.out.println("adding 23");
-		tree.add(23);
-		printInOrder(tree);
-		
-		System.out.println("adding 0");
-		tree.add(0);
-		printInOrder(tree);
-		
-		System.out.println("adding 4000");
-		tree.add(4000);
-		printInOrder(tree);
-		
-		System.out.println("removing all occurrences of 4000: "  + tree.remove(4000));
-		printInOrder(tree);
-		
-		System.out.println("removing all occurrences of 4: " + tree.remove(4));
-		printInOrder(tree);
-		
-		System.out.println("removing all occurrences of 23: " + tree.remove(23));
-		printInOrder(tree);
-		
-		System.out.println("removing all occurrences of 999: " + tree.remove(999));
-		printInOrder(tree);
-		
+		print(tree);
+
 	}
 	
-	private static void printInOrder(BinarySearchTree tree) {
+	private static void print(BinarySearchTree tree) {
+		System.out.print("Inorder: ");
+		tree.printInorder();
+		System.out.print("Preorder: ");
+		tree.printPreorder();
+		System.out.print("Postorder: ");
+		tree.printPostorder();
+		System.out.println();
 	}
 	
 
