@@ -19,7 +19,7 @@ public class Main {
 		System.out.println("creating tree with array: {26, 82, 16, 92, 33}");
 		BinarySearchTree tree = new BinarySearchTree(array);
 		print(tree);
-
+		
 	}
 	
 	private static void print(BinarySearchTree tree) {
@@ -29,6 +29,8 @@ public class Main {
 		tree.printPreorder();
 		System.out.print("Postorder: ");
 		tree.printPostorder();
+		System.out.println("depth: " + tree.getDepth());
+		System.out.println("deepest: " + tree.getDeepest());
 		System.out.println();
 	}
 	

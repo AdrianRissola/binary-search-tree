@@ -1,6 +1,7 @@
 package com.slingr.binarysearchtree;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -115,11 +116,8 @@ class BinarySearchTreeTest {
 	}
 	
 	@Test
-	void testAdd_duplicate_throws_RuntimeException() {
-		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> {
-			this.tree.add(7);
-		}, "RuntimeException was expected");
-		assertNotNull(thrown.getMessage());
+	void testAdd_duplicate_return_null() {
+		assertNull(this.tree.add(7));
 	}
 	
 	@Test
@@ -161,5 +159,127 @@ class BinarySearchTreeTest {
 		    val = next;
 		}
 	}
+	
+	// getDepth tests
+	@Test
+	void testGetDepth_only_root() {
+		BinarySearchTree bst = new BinarySearchTree();
+		bst.add(2);
+		assertEquals(bst.getDepth(), 0);
+	}
+	
+	@Test
+	void testGetDepth_six_nodes_depth_3() {
+		Integer[] array = {12, 11, 90};
+		BinarySearchTree bst = new BinarySearchTree(array);
+		assertEquals(bst.getDepth(), 1);
+		bst.add(82); bst.add(7); bst.add(9);
+		assertEquals(bst.getDepth(), 3);
+	}
+	
+	@Test
+	void testGetDepth_five_nodes_depth_2() {
+		BinarySearchTree bst = new BinarySearchTree();
+		bst.add(26); bst.add(82); bst.add(16); 
+		assertEquals(bst.getDepth(), 1);
+		bst.add(92); bst.add(33);
+		assertEquals(bst.getDepth(), 2);
+	}
+	
+	@Test
+	void testGetDepth_stress_test() {
+		
+		BinarySearchTree bst = getBigTree();
+		
+		long startTime = System.nanoTime();
+		long firsCall = bst.getDepth();
+		long endTime = System.nanoTime();
+		long durationFirstExec = endTime - startTime;
+		System.out.println(durationFirstExec);
+		
+		startTime = System.nanoTime();
+		long secondCall = bst.getDepth();
+		endTime = System.nanoTime();
+		long durationSecondExec = endTime - startTime;
+		System.out.println(durationSecondExec);
+		
+		assertTrue(firsCall == secondCall);
+		assertTrue(durationFirstExec>durationSecondExec);
+		
+	}
+	
+	// getDeepest tests
+	@Test
+	void testGetDeepest_only_root() {
+		BinarySearchTree bst = new BinarySearchTree();
+		bst.add(5);
+		assertEquals(bst.getDeepest().size(), 1);
+		assertEquals(bst.getDeepest().get(0).intValue(), 5);
+	}
+	
+	@Test
+	void testGetDeepest_six_nodes_depth_3() {
+		BinarySearchTree bst = new BinarySearchTree();
+		
+		bst.add(12); bst.add(11); bst.add(90);
+		assertEquals(bst.getDeepest().size(), 2);
+		assertEquals(bst.getDeepest().get(0).intValue(), 11);
+		assertEquals(bst.getDeepest().get(1).intValue(), 90);
+		
+		bst.add(82); bst.add(7); bst.add(9);
+		assertEquals(bst.getDeepest().size(), 1);
+		assertEquals(bst.getDeepest().get(0).intValue(), 9);
+	}
+	
+	@Test
+	void testGetDeepest_five_nodes_depth_2() {
+		BinarySearchTree bst = new BinarySearchTree();
+		
+		bst.add(26); bst.add(82); bst.add(16);
+		assertEquals(bst.getDeepest().size(), 2);
+		assertEquals(bst.getDeepest().get(0).intValue(), 16);
+		assertEquals(bst.getDeepest().get(1).intValue(), 82);
+		
+		bst.add(92); bst.add(33);
+		assertEquals(bst.getDeepest().size(), 2);
+		assertEquals(bst.getDeepest().get(0).intValue(), 33);
+		assertEquals(bst.getDeepest().get(1).intValue(), 92);
+	}
+	
+	
+	@Test
+	void testGetDeepest_stress_test() {
+		
+		BinarySearchTree bst = getBigTree();
+		
+		long startTime = System.nanoTime();
+		List<Integer> firsCall = bst.getDeepest();
+		long endTime = System.nanoTime();
+		long durationFirstExec = endTime - startTime;
+		System.out.println(durationFirstExec);
+		
+		startTime = System.nanoTime();
+		List<Integer> secondCall = bst.getDeepest();
+		endTime = System.nanoTime();
+		long durationSecondExec = endTime - startTime;
+		System.out.println(durationSecondExec);
+		
+		assertTrue(firsCall.equals(secondCall));
+		assertTrue(durationFirstExec>durationSecondExec);
+		
+	}
+	
+	private BinarySearchTree getBigTree() {
+		BinarySearchTree bst = new BinarySearchTree();
+		Integer min = -1000;
+		Integer max = 1000;
+		for(int i=0 ; i<1000000 ; i++) {
+			Integer random_int = (int) Math.floor(Math.random()*(max-min+1)+min);
+			bst.add(random_int);
+		}
+		return bst;
+	}
+	
+	
 
 }
