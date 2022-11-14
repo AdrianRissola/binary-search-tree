@@ -37,6 +37,26 @@ public class Node {
 		this.value = value;
 	}
 	
+	public boolean hasRight() {
+		return this.right!=null;
+	}
+	
+	public boolean hasLeft() {
+		return this.left!=null;
+	}
+	
+	public boolean isLeaf() {
+		return !this.hasLeft() && !this.hasRight();
+	}
+	
+	public boolean hasRight(Node node) {
+		return this.hasRight() && this.right.equals(node);
+	}
+	
+	public boolean hasLeft(Node node) {
+		return this.hasLeft() && this.left.equals(node);
+	}
+	
 	@Override
 	public String toString() {
 		String left = this.left!=null ? this.left.getValue().toString() : "null";

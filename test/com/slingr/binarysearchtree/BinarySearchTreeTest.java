@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -78,30 +79,27 @@ class BinarySearchTreeTest {
 	// tests exist value //
 	@Test
 	void testExist_node_value_return_true() {
-		assertTrue(this.tree.exist(6));
+		assertTrue(this.tree.exists(6));
 	}
 	
 	@Test
 	void testExist_root_value_return_true() {
-		assertTrue(this.tree.exist(4));
+		assertTrue(this.tree.exists(4));
 	}
 	
 	@Test
 	void testExist_leaf_value_return_true() {
-		assertTrue(this.tree.exist(7));
+		assertTrue(this.tree.exists(7));
 	}
 	
 	@Test
 	void testExist_return_false() {
-		assertFalse(this.tree.exist(999999));
+		assertFalse(this.tree.exists(999999));
 	}
 	
 	@Test
-	void testExist_with_null_throws_RuntimeException() {
-		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class, () -> {
-			this.tree.exist(null);
-		}, "RuntimeException was expected");
-		assertNotNull(thrown.getMessage());
+	void testExist_with_null_return_false() {	
+		assertFalse(this.tree.exists(null));
 	}
 	
 	// tests add value //
@@ -109,7 +107,7 @@ class BinarySearchTreeTest {
 	void testAdd() {
 		long size = this.tree.getSize();
 		Integer value = this.tree.add(123);
-		assertTrue(this.tree.exist(123));
+		assertTrue(this.tree.exists(123));
 		assertNotNull(value);
 		assertEquals(value.intValue(), 123);
 		assertEquals(size+1, this.tree.getSize());
@@ -130,9 +128,81 @@ class BinarySearchTreeTest {
 
 	// tests remove value //
 	@Test
-	void testRemove_existing_value_return_true() {
+	void testRemove_root_value_return_true() {
 		long size = this.tree.getSize();
 		boolean removed = this.tree.remove(4);
+		assertTrue(removed);
+		assertEquals(size-1, this.tree.getSize());
+	}
+	
+	@Test
+	void testRemove_tree_with_only_root_return_true() {
+		
+		BinarySearchTree bst = new BinarySearchTree();
+		bst.add(5);
+		long initialSize = bst.getSize();
+		boolean removed = bst.remove(5);
+		assertTrue(removed);
+		assertEquals(initialSize-1, bst.getSize());
+		
+		Integer[] array = {10};
+		BinarySearchTree bstFromArray = new BinarySearchTree(array);
+		initialSize = bstFromArray.getSize();
+		removed = bstFromArray.remove(10);
+		assertTrue(removed);
+		assertEquals(initialSize-1, bstFromArray.getSize());
+	}
+	
+	@Test
+	void testRemove_left_sun_return_true() {
+		
+		BinarySearchTree bst = new BinarySearchTree();
+		bst.add(5);
+		bst.add(1);
+		long initialSize = bst.getSize();
+		boolean removed = bst.remove(1);
+		assertTrue(removed);
+		assertEquals(initialSize-1, bst.getSize());
+		
+		Integer[] array = {10, 2};
+		BinarySearchTree bstFromArray = new BinarySearchTree(array);
+		initialSize = bstFromArray.getSize();
+		removed = bstFromArray.remove(2);
+		assertTrue(removed);
+		assertEquals(initialSize-1, bstFromArray.getSize());
+	}
+	
+	@Test
+	void testRemove_right_sun_return_true() {
+		
+		BinarySearchTree bst = new BinarySearchTree();
+		bst.add(5);
+		bst.add(100);
+		long initialSize = bst.getSize();
+		boolean removed = bst.remove(100);
+		assertTrue(removed);
+		assertEquals(initialSize-1, bst.getSize());
+		
+		Integer[] array = {10, 200};
+		BinarySearchTree bstFromArray = new BinarySearchTree(array);
+		initialSize = bstFromArray.getSize();
+		removed = bstFromArray.remove(200);
+		assertTrue(removed);
+		assertEquals(initialSize-1, bstFromArray.getSize());
+	}
+	
+	@Test
+	void testRemove_internal_value_return_true() {
+		long size = this.tree.getSize();
+		boolean removed = this.tree.remove(6);
+		assertTrue(removed);
+		assertEquals(size-1, this.tree.getSize());
+	}
+	
+	@Test
+	void testRemove_leaf_value_return_true() {
+		long size = this.tree.getSize();
+		boolean removed = this.tree.remove(5);
 		assertTrue(removed);
 		assertEquals(size-1, this.tree.getSize());
 	}
@@ -143,6 +213,155 @@ class BinarySearchTreeTest {
 		boolean removed = this.tree.remove(999999);
 		assertFalse(removed);
 		assertEquals(size, this.tree.getSize());
+	}
+	
+	@Test
+	void testRemove_all_inorder() {
+		this.tree.getValuesInorder().forEach( val -> {
+			long size = this.tree.getSize();
+			boolean removed = this.tree.remove(val);
+			assertTrue(removed);
+			assertEquals(size, this.tree.getSize()+1);
+			if(this.tree.getSize()>0) {
+				assertFalse(this.tree.getValuesInorder().isEmpty());
+				assertFalse(this.tree.getValuesPostorder().isEmpty());
+				assertFalse(this.tree.getValuesPreorder().isEmpty());
+			}
+		});
+		assertTrue(this.tree.getSize()==0);
+	}
+	
+	@Test
+	void testRemove_all_inorder_reverse() {
+		List<Integer> valuesInorder = this.tree.getValuesInorder();
+		Collections.reverse(valuesInorder);
+		valuesInorder.forEach( val -> {
+			long size = this.tree.getSize();
+			boolean removed = this.tree.remove(val);
+			assertTrue(removed);
+			assertEquals(size, this.tree.getSize()+1);
+			if(this.tree.getSize()>0) {
+				assertFalse(this.tree.getValuesInorder().isEmpty());
+				assertFalse(this.tree.getValuesPostorder().isEmpty());
+				assertFalse(this.tree.getValuesPreorder().isEmpty());
+			}
+		});
+		assertTrue(this.tree.getSize()==0);
+	}
+	
+	@Test
+	void testRemove_all_preorder() {
+		this.tree.getValuesPreorder().forEach( val -> {
+			long size = this.tree.getSize();
+			boolean removed = this.tree.remove(val);
+			assertTrue(removed);
+			assertEquals(size, this.tree.getSize()+1);
+			if(this.tree.getSize()>0) {
+				assertFalse(this.tree.getValuesInorder().isEmpty());
+				assertFalse(this.tree.getValuesPostorder().isEmpty());
+				assertFalse(this.tree.getValuesPreorder().isEmpty());
+			}
+		});
+		assertTrue(this.tree.getSize()==0);
+	}
+	
+	@Test
+	void testRemove_all_preorder_reverse() {
+		List<Integer> valuesPreorder = this.tree.getValuesPreorder();
+		Collections.reverse(valuesPreorder);
+		valuesPreorder.forEach( val -> {
+			long size = this.tree.getSize();
+			boolean removed = this.tree.remove(val);
+			assertTrue(removed);
+			assertEquals(size, this.tree.getSize()+1);
+			if(this.tree.getSize()>0) {
+				assertFalse(this.tree.getValuesInorder().isEmpty());
+				assertFalse(this.tree.getValuesPostorder().isEmpty());
+				assertFalse(this.tree.getValuesPreorder().isEmpty());
+			}
+		});
+		assertTrue(this.tree.getSize()==0);
+	}
+	
+	@Test
+	void testRemove_all_postorder() {
+		this.tree.getValuesPostorder().forEach( val -> {
+			long size = this.tree.getSize();
+			boolean removed = this.tree.remove(val);
+			assertTrue(removed);
+			assertEquals(size, this.tree.getSize()+1);
+			if(this.tree.getSize()>0) {
+				assertFalse(this.tree.getValuesInorder().isEmpty());
+				assertFalse(this.tree.getValuesPostorder().isEmpty());
+				assertFalse(this.tree.getValuesPreorder().isEmpty());
+			}
+		});
+		assertTrue(this.tree.getSize()==0);
+	}
+	
+	@Test
+	void testRemove_all_postorder_reverse() {
+		List<Integer> valuesPostorder = this.tree.getValuesPostorder();
+		Collections.reverse(valuesPostorder);
+		valuesPostorder.forEach( val -> {
+			long size = this.tree.getSize();
+			boolean removed = this.tree.remove(val);
+			assertTrue(removed);
+			assertEquals(size, this.tree.getSize()+1);
+			if(this.tree.getSize()>0) {
+				assertFalse(this.tree.getValuesInorder().isEmpty());
+				assertFalse(this.tree.getValuesPostorder().isEmpty());
+				assertFalse(this.tree.getValuesPreorder().isEmpty());
+			}
+		});
+		assertTrue(this.tree.getSize()==0);
+	}
+	
+	@Test
+	void testRemove_stress_test() {
+		
+		for(int i=1 ; i<=100 ; i++) {
+			BinarySearchTree bst = this.getRandomBigTree();
+			assertTrue(bst.remove(500));
+			assertTrue(bst.remove(250));
+			assertTrue(bst.remove(750));
+			assertTrue(bst.remove(1000));
+			assertTrue(bst.remove(-1000));
+			
+			List<Integer> values = bst.getValuesInorder();
+			assertNotNull(values);
+			assertFalse(values.isEmpty());
+			Integer val = null;
+			for(Integer next: values) {
+			    if (val != null) {
+			        assertTrue(val<next);
+			    }
+			    val = next;
+			}
+		}
+
+	}
+	
+	@Test
+	void testRemove_all_stress_test() {
+		BinarySearchTree bst = this.getRandomBigTree();
+		for(int i=-1000 ; i<=1000 ; i++) {
+			assertTrue(bst.remove(i));
+			
+			List<Integer> values = bst.getValuesInorder();
+			if(!values.isEmpty()) {
+				Integer val = null;
+				for(Integer next: values) {
+				    if (val != null) {
+				        assertTrue(val<next);
+				    }
+				    val = next;
+				}
+			}
+		}
+		
+		assertTrue(bst.getSize()==0);
+
 	}
 	
 	// test Get Values Inorder //
@@ -189,19 +408,17 @@ class BinarySearchTreeTest {
 	@Test
 	void testGetDepth_stress_test() {
 		
-		BinarySearchTree bst = getBigTree();
+		BinarySearchTree bst = getRandomBigTree();
 		
 		long startTime = System.nanoTime();
 		long firsCall = bst.getDepth();
 		long endTime = System.nanoTime();
 		long durationFirstExec = endTime - startTime;
-		System.out.println(durationFirstExec);
 		
 		startTime = System.nanoTime();
 		long secondCall = bst.getDepth();
 		endTime = System.nanoTime();
 		long durationSecondExec = endTime - startTime;
-		System.out.println(durationSecondExec);
 		
 		assertTrue(firsCall == secondCall);
 		assertTrue(durationFirstExec>durationSecondExec);
@@ -250,33 +467,37 @@ class BinarySearchTreeTest {
 	@Test
 	void testGetDeepest_stress_test() {
 		
-		BinarySearchTree bst = getBigTree();
+		BinarySearchTree bst = getRandomBigTree();
 		
 		long startTime = System.nanoTime();
 		List<Integer> firsCall = bst.getDeepest();
 		long endTime = System.nanoTime();
 		long durationFirstExec = endTime - startTime;
-		System.out.println(durationFirstExec);
 		
 		startTime = System.nanoTime();
 		List<Integer> secondCall = bst.getDeepest();
 		endTime = System.nanoTime();
 		long durationSecondExec = endTime - startTime;
-		System.out.println(durationSecondExec);
 		
 		assertTrue(firsCall.equals(secondCall));
 		assertTrue(durationFirstExec>durationSecondExec);
 		
 	}
 	
-	private BinarySearchTree getBigTree() {
+	private BinarySearchTree getRandomBigTree() {
 		BinarySearchTree bst = new BinarySearchTree();
 		Integer min = -1000;
 		Integer max = 1000;
-		for(int i=0 ; i<1000000 ; i++) {
+		long numberOfNodes = (int) Math.floor(Math.random()*1000001);
+		for(int i=0 ; i<numberOfNodes ; i++) {
 			Integer random_int = (int) Math.floor(Math.random()*(max-min+1)+min);
 			bst.add(random_int);
 		}
+		bst.add(500);
+		bst.add(250);
+		bst.add(750);
+		bst.add(1000);
+		bst.add(-1000);
 		return bst;
 	}
 	
