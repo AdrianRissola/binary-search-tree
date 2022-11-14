@@ -15,7 +15,7 @@ public class BinarySearchTree {
 	private static final String POSTORDER = "POSTORDER";
 	private long depth = -1;
 	private List<Integer> deepest;
-	private boolean wasModified = true;
+	private boolean wasModified = false;
 	private long size = 0;
 	
 	/**
@@ -55,7 +55,7 @@ public class BinarySearchTree {
 		long depth = max + 1;
 		return depth;
 	}
-	
+		
 	private void collect(Node node, Long level) {
 		List<Integer> values = this.levelToValues.get(level);
 		if(values==null)
@@ -65,7 +65,7 @@ public class BinarySearchTree {
 	}
 	
 	/**
-     * @return the depth of the tree starting from 0
+     * @return the depth of the tree starting from 0, return -1 when the tree is empty
      */
 	public long getDepth() {
 		this.sync();
@@ -106,6 +106,7 @@ public class BinarySearchTree {
 				this.size++;
 			}
 		}
+		this.wasModified = true;
 	}
 	
 	/**

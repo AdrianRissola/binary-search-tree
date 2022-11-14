@@ -10,6 +10,8 @@ public class Main {
 		
 		System.out.println("creating empty tree");
 		BinarySearchTree bst = new BinarySearchTree();
+		System.out.println("Depth: " + bst.getDepth());
+		System.out.println("Deepest: " + bst.getDeepest());
 		System.out.println("adding: 12, 11, 90, 82, 7, 9");
 		bst.add(12); bst.add(11); bst.add(90); 
 		bst.add(82); bst.add(7); bst.add(9);
