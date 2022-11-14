@@ -30,9 +30,11 @@ class BinarySearchTreeTest {
 		tree.add(5);
 		tree.add(2);
 		tree.add(10);
+		tree.printInorder();
 		assertEquals(tree.getSize(), 3);
 		tree.remove(5);
 		assertEquals(tree.getSize(), 2);
+		tree.printInorder();
 	}
 	
 	@Test

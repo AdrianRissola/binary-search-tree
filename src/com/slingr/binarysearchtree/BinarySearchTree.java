@@ -43,13 +43,13 @@ public class BinarySearchTree {
 		
 	private long findDepth(Node node, long level) {
 		level++;
-		if(this.isLeaf(node))
+		if(node.isLeaf())
 			this.collect(node, level);
 		long leftDepth = 0;
 		long rightDepth = 0;  
-		if(node.getLeft() != null)  
+		if(node.hasLeft())  
 			leftDepth = findDepth(node.getLeft(), level);  
-		if(node.getRight() != null)  
+		if(node.hasRight())  
 			rightDepth = findDepth(node.getRight(), level);
 		long max = (leftDepth >= rightDepth) ? leftDepth : rightDepth;
 		long depth = max + 1;
@@ -91,15 +91,6 @@ public class BinarySearchTree {
 		this.depth = this.findDepth(this.root, -1)-1;
 		this.deepest = this.levelToValues.get(this.depth);
 	}
-
-	private void validate(Integer[] array) {
-		if(this.isNullOrEmpty(array)) throw new RuntimeException("Null or empty array is not allowed");
-		boolean allValuesAreNull = true;
-		for(Integer value : array) {
-			if(value!=null) allValuesAreNull = false;
-		}
-		if (allValuesAreNull) throw new RuntimeException("Array with only null values is not allowed");
-	}
 	
 	/**
      * @return the number of elements in this tree
@@ -135,7 +126,9 @@ public class BinarySearchTree {
 	 * @return {@code true} if this tree contained the specified element
 	 */
 	public boolean remove(Integer value) {
-		Node node = this.find(value, this.root, null, true);
+		Node node = null;
+		if(value!=null)
+			node = this.find(value, this.root, null, true);
 		if(node!=null) {
 			this.wasModified = true;
 			this.size--;
@@ -160,15 +153,15 @@ public class BinarySearchTree {
 			return this.root;
 		}
 		Node newNode = null;
-		if(value>node.getValue()) {
-			if(node.getRight()==null) {
+		if(value.compareTo(node.getValue())>0) {
+			if(!node.hasRight()) {
 				newNode = new Node(value);
 				node.setRight(newNode);
 			} else {
 				newNode = this.add(value, node.getRight());
 			}
 		} else {
-			if(node.getLeft()==null) {
+			if(!node.hasLeft()) {
 				newNode = new Node(value);
 				node.setLeft(newNode);
 			} else {
@@ -183,80 +176,25 @@ public class BinarySearchTree {
 	 * @return {@code true} is the given value is present in the tree, {@code false} otherwise
 	 */
 	public boolean exists(Integer value) {
-		return this.find(value, this.root, null, false) != null ? true : false;
+		boolean exists = false;
+		if(value!=null)
+			exists = this.find(value, this.root, null, false) != null ? true : false;
+		return exists;
 	}
 	
-	
-	/**
-	 * print the tree in order
-	 */
-	public void printInorder() {
-		System.out.println(this.getValues(INORDER));
-	}
-	
-	/**
-	 * print the tree in preorder
-	 */
-	public void printPreorder() {
-		System.out.println(this.getValues(PREORDER));
-	}
-	
-	/**
-	 * print the tree in postorder
-	 */
-	public void printPostorder() {
-		System.out.println(this.getValues(POSTORDER));
-	}
-	
-	/**
-	 * @return {@code List<Integer>} with tree values in order
-	 */
-	public List<Integer> getValuesInorder() {
-		return getValues(INORDER);
-	}
-	
-	/**
-	 * @return {@code List<Integer>} with tree values in preorder
-	 */
-	public List<Integer> getValuesPreorder() {
-		return getValues(PREORDER);
-	}
-	
-	/**
-	 * @return {@code List<Integer>} with tree values in postorder
-	 */
-	public List<Integer> getValuesPostorder() {
-		return getValues(POSTORDER);
-	}
-	
-	private List<Integer> getValues(String traversalMode) {
-		List<Integer> list = new ArrayList<>();
-		this.treeToList(this.root, list, traversalMode);
-		return list;
-	}
-	
-	private void treeToList(Node node, List<Integer> list, String traversalMode) {
-		if(node != null) {
-			if(PREORDER.equals(traversalMode)) list.add(node.getValue());
-			treeToList(node.getLeft(), list, traversalMode);
-			if(INORDER.equals(traversalMode)) list.add(node.getValue());
-			treeToList(node.getRight(), list, traversalMode);
-			if(POSTORDER.equals(traversalMode)) list.add(node.getValue());
-		}
-	}
-	
-	private Node find(Integer value, Node node, Node father, boolean isDeletion) {
-		if(!this.isNullOrEmpty(node) && value!=null) {
+	private Node find(Integer value, Node node, Node itsFather, boolean isDeletion) {
+		Node found = null;
+		if(node!=null) {
 			if(value.equals(node.getValue())) {
-				if(isDeletion) this.deletion(node, father);
-				return node;
+				if(isDeletion) this.deletion(node, itsFather);
+				found = node;
 			} else {
-				if(value>node.getValue())
-					return find(value, node.getRight(), node, isDeletion);
-				else return find(value, node.getLeft(), node, isDeletion);
+				if(value.compareTo(node.getValue())>0)
+					found = find(value, node.getRight(), node, isDeletion);
+				else found = find(value, node.getLeft(), node, isDeletion);
 			}
-		} else 
-			return null;
+		}  
+		return found;
 	}
 	
 	private void deletion(Node nodeToRemove, Node itsFather) {
@@ -317,13 +255,63 @@ public class BinarySearchTree {
 			father.setRight(rightOrphan);
 		}
 	}
-
-	private boolean isNullOrEmpty(Node node) {
-		return node==null || node.getValue()==null;
+	
+	/**
+	 * print the tree in order
+	 */
+	public void printInorder() {
+		System.out.println(this.getValues(INORDER));
 	}
 	
-	private boolean isLeaf(Node node) {
-		return node.getRight()==null && node.getLeft()==null;
+	/**
+	 * print the tree in preorder
+	 */
+	public void printPreorder() {
+		System.out.println(this.getValues(PREORDER));
+	}
+	
+	/**
+	 * print the tree in postorder
+	 */
+	public void printPostorder() {
+		System.out.println(this.getValues(POSTORDER));
+	}
+	
+	/**
+	 * @return {@code List<Integer>} with tree values in order
+	 */
+	public List<Integer> getValuesInorder() {
+		return getValues(INORDER);
+	}
+	
+	/**
+	 * @return {@code List<Integer>} with tree values in preorder
+	 */
+	public List<Integer> getValuesPreorder() {
+		return getValues(PREORDER);
+	}
+	
+	/**
+	 * @return {@code List<Integer>} with tree values in postorder
+	 */
+	public List<Integer> getValuesPostorder() {
+		return getValues(POSTORDER);
+	}
+	
+	private List<Integer> getValues(String traversalMode) {
+		List<Integer> list = new ArrayList<>();
+		this.treeToList(this.root, list, traversalMode);
+		return list;
+	}
+	
+	private void treeToList(Node node, List<Integer> list, String traversalMode) {
+		if(node != null) {
+			if(PREORDER.equals(traversalMode)) list.add(node.getValue());
+			treeToList(node.getLeft(), list, traversalMode);
+			if(INORDER.equals(traversalMode)) list.add(node.getValue());
+			treeToList(node.getRight(), list, traversalMode);
+			if(POSTORDER.equals(traversalMode)) list.add(node.getValue());
+		}
 	}
 
 	private boolean isNullOrEmpty(Integer[] array) {
@@ -332,6 +320,15 @@ public class BinarySearchTree {
 	
 	private void validateNull(Object value) {
 		if(value==null) throw new RuntimeException("Null value is not allowed");
+	}
+	
+	private void validate(Integer[] array) {
+		if(this.isNullOrEmpty(array)) throw new RuntimeException("Null or empty array is not allowed");
+		boolean allValuesAreNull = true;
+		for(Integer value : array) {
+			if(value!=null) allValuesAreNull = false;
+		}
+		if (allValuesAreNull) throw new RuntimeException("Array with only null values is not allowed");
 	}
 
 }
